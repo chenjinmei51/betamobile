@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Training Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f4f4; }
+        #game-container { text-align: center; width: 100%; max-width: 600px; }
+        #progress { display: flex; justify-content: center; margin-bottom: 10px; }
+        .level-box { width: 20px; height: 20px; margin: 2px; background: lightgray; border-radius: 3px; }
+        .correct { background: green; }
+        .incorrect { background: red; }
+        #display-number { font-size: 2em; margin: 20px 0; }
+        #input-section { display: none; }
+        input { padding: 10px; font-size: 1em; text-align: center; }
+        button { padding: 10px 15px; margin-top: 10px; cursor: pointer; background: blue; color: white; border: none; border-radius: 5px; }
+        button:hover { background: darkblue; }
+        #score { font-size: 1.2em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Memory Training Game</h1>
+        <p>Remember the number shown and enter it correctly within the time limit.</p>
+        <button onclick="startGame()">Start Game</button>
+        <div id="progress"></div>
+        <div id="display-number"></div>
+        <div id="input-section">
+            <input type="text" id="user-input" placeholder="Enter the number">
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        let level = 1;
+        let totalLevels = 20;
+        let score = 0;
+        let currentNumber = "";
+        let progressDiv = document.getElementById("progress");
+
+        function generateNumber(level) {
+            let num = "";
+            for (let i = 0; i < level; i++) {
+                num += Math.floor(Math.random() * 10);
+            }
+            return num;
+        }
+
+        function startGame() {
+            document.querySelector("button").style.display = "none";
+            progressDiv.innerHTML = "";
+            for (let i = 0; i < totalLevels; i++) {
+                let div = document.createElement("div");
+                div.classList.add("level-box");
+                progressDiv.appendChild(div);
+            }
+            nextLevel();
+        }
+
+        function nextLevel() {
+            if (level > totalLevels) {
+                endGame();
+                return;
+            }
+            
+            document.getElementById("display-number").innerText = "";
+            document.getElementById("input-section").style.display = "none";
+            currentNumber = generateNumber(level);
+            document.getElementById("display-number").innerText = currentNumber;
+            
+            setTimeout(() => {
+                document.getElementById("display-number").innerText = "";
+                document.getElementById("input-section").style.display = "block";
+                document.getElementById("user-input").value = "";
+                document.getElementById("user-input").focus();
+            }, 5000);
+        }
+
+        function checkAnswer() {
+            let userAnswer = document.getElementById("user-input").value;
+            let progressBoxes = document.getElementsByClassName("level-box");
+            
+            if (userAnswer === currentNumber) {
+                score += level * 5;
+                progressBoxes[level - 1].classList.add("correct");
+            } else {
+                progressBoxes[level - 1].classList.add("incorrect");
+            }
+            
+            level++;
+            nextLevel();
+        }
+
+        function endGame() {
+            document.getElementById("display-number").innerText = "Game Over! Your Score: " + score + "/1050";
+            let result = score >= 840 ? "Excellent!" : "Keep Practicing!";
+            document.getElementById("score").innerText = result;
+            document.getElementById("input-section").style.display = "none";
+        }
+    </script>
+</body>
+</html>
